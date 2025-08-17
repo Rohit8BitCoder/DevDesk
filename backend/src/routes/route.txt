@@ -1,0 +1,23 @@
+### `GET /projects`
+
+- **Description**: List all projects for a user.
+- **Query**: `owner_id`
+
+### `GET /projects/:id`
+
+- **Description**: Fetch project details.
+- **Response**: `{ id, name, description, owner_id, created_at }`
+
+### `POST /projects`
+
+- **Description**: Create new project.
+- **Body**: `{ name, description, owner_id }`
+
+### `PATCH /projects/:id`
+
+- **Description**: Update project details.
+- **Body**: `{ name?, description? }`
+
+### `DELETE /projects/:id`
+
+- **Description**: Delete a project.
