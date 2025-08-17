@@ -1,16 +1,22 @@
 
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js"
 import dotenv from "dotenv";
-import { Router, Request, Response } from "express";
+import { Router } from "express"
+import type { Request, Response } from "express";
 import authMiddleware from "../middleware.ts";
 
 dotenv.config();
 const router = Router();
 
-const supabase = createClient(
-  process.env.SUPABASE_URL as string,
-  process.env.SUPABASE_KEY as string
-);
+// Validate env variables early
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  throw new Error("❌ Missing SUPABASE_URL or SUPABASE_KEY in environment.");
+}
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 interface AuthenticatedRequest extends Request {
   user?: { id: string };
@@ -100,18 +106,40 @@ router.patch('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Resp
 
     const { data, error } = await supabase
       .from('projects')
-      .update([{ name, description, owner_id: userId }])
+      .update({ name, description })
       .eq("id", project_id)
       .eq("owner_id", userId)
       .select()
       .single()
 
     if (error) return sendResponse(res, 500, false, { error: error.message });
-    return sendResponse(res, 201, true, { project: data });
+    return sendResponse(res, 200, true, { project: data });
 
   } catch (error: any) {
-    return sendResponse(res, 500, false, { rrror: error.message });
+    return sendResponse(res, 500, false, { error: error.message });
   }
 })
+
+// Delete project
+router.delete('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const projectId = req.params.id;
+    
+    if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" });
+
+    const { error } = await supabase
+      .from('projects')
+      .delete()
+      .eq("id", projectId)
+      .eq("owner_id", userId);
+
+    if (error) return sendResponse(res, 500, false, { error: error.message });
+    
+    return sendResponse(res, 200, true, { message: "Project deleted successfully" });
+  } catch (error: any) {
+    return sendResponse(res, 500, false, { error: error.message });
+  }
+});
 
 export default router;

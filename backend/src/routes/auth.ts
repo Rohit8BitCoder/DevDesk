@@ -1,7 +1,9 @@
 
-import { Router, Request, Response } from "express";
+import type { Request, Response } from "express";
+import { Router } from "express";
 import dotenv from "dotenv";
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { createClient } from "@supabase/supabase-js"
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 dotenv.config();
 const router = Router();
@@ -62,6 +64,21 @@ router.post("/login", async (req: Request, res: Response) => {
       message: "Signin successful",
       session: data.session,
       user: data.user,
+    });
+  } catch (error: any) {
+    return handleError(res, error, 500);
+  }
+});
+
+// Logout
+router.post("/logout", async (req: Request, res: Response) => {
+  try {
+    const { error } = await supabaseAuth.auth.signOut();
+    if (error) return handleError(res, error);
+
+    return res.json({
+      success: true,
+      message: "Logout successful"
     });
   } catch (error: any) {
     return handleError(res, error, 500);
