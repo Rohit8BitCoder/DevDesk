@@ -76,7 +76,7 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Response
       .from("projects")
       .insert([{ name, description, owner_id: userId }])
       .select()
-      .single();
+      .single()
 
     if (error) return sendResponse(res, 500, false, { error: error.message });
 
@@ -85,5 +85,33 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Response
     return sendResponse(res, 500, false, { error: err.message });
   }
 });
+
+
+//update a project details
+
+router.patch('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+  try {
+
+    const userId = req.user?.id;
+    const project_id = req.params.id;
+    const { name, description } = req.body;
+    if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" })
+    if (!name) return sendResponse(res, 400, false, { error: 'project name is required' });
+
+    const { data, error } = await supabase
+      .from('projects')
+      .update([{ name, description, owner_id: userId }])
+      .eq("id", project_id)
+      .eq("owner_id", userId)
+      .select()
+      .single()
+
+    if (error) return sendResponse(res, 500, false, { error: error.message });
+    return sendResponse(res, 201, true, { project: data });
+
+  } catch (error: any) {
+    return sendResponse(res, 500, false, { rrror: error.message });
+  }
+})
 
 export default router;
