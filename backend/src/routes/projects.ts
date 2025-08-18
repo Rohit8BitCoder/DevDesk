@@ -125,7 +125,7 @@ router.delete('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Res
   try {
     const userId = req.user?.id;
     const projectId = req.params.id;
-    
+
     if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" });
 
     const { error } = await supabase
@@ -135,7 +135,7 @@ router.delete('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Res
       .eq("owner_id", userId);
 
     if (error) return sendResponse(res, 500, false, { error: error.message });
-    
+
     return sendResponse(res, 200, true, { message: "Project deleted successfully" });
   } catch (error: any) {
     return sendResponse(res, 500, false, { error: error.message });
