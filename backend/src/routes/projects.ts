@@ -97,7 +97,6 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Response
 
 router.patch('/:id', authMiddleware, async (req: AuthenticatedRequest, res: Response) => {
   try {
-
     const userId = req.user?.id;
     const project_id = req.params.id;
     const { name, description } = req.body;
