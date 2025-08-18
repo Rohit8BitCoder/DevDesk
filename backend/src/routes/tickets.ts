@@ -1,4 +1,5 @@
-import { Router, Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction } from "express";
+import { Router } from "express";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import authMiddleware from "../middleware.ts";
@@ -238,7 +239,6 @@ router.patch('/tickets/:ticket_id',
 
       if (!project) return sendResponse(res, 403, false, { error: 'Forbidden' });
 
-      // Build update object with only provided fields
       const updateData: Record<string, any> = {};
       if (title !== undefined) updateData.title = title;
       if (description !== undefined) updateData.description = description;
@@ -261,6 +261,33 @@ router.patch('/tickets/:ticket_id',
       return sendResponse(res, 500, false, { error: error.message });
 
     }
+  })
+
+
+//delete a ticket
+
+router.delete('/tickets/:ticket_id',
+  authMiddleware
+  , async (req: AuthenticatedRequest, res: Response) => {
+    try {
+      const ticket_id = req.params.ticket_id;
+      const userId = req.user?.id
+
+      const { data, error } = await supabase
+        .from('tickets')
+        .delete()
+        .eq('ticket_id', ticket_id)
+        .eq('created_by', userId)
+        .select()
+        .single()
+      if (error) return sendResponse(res, 500, false, { error: error.message });
+      if (!data) return sendResponse(res, 404, false, { message: 'Ticket not found for deletion' });
+      return sendResponse(res, 200, true, { ticket: data });
+
+    } catch (error: any) {
+      return sendResponse(res, 500, false, { error: error.message })
+    }
+
   })
 
 export default router;
