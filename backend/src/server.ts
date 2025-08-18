@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import authRouters from "./routes/auth.ts";
 import authProfiles from "./routes/profile.ts";
 import authprojects from "./routes/projects.ts";
+import ticketsRouter from "./routes/tickets.ts";
 
 dotenv.config();
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouters);
 app.use("/api/v1/profiles", authProfiles);
 app.use("/api/v1/projects", authprojects);
+app.use("/api/v1", ticketsRouter);
 
 // Error handling middleware
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
