@@ -85,8 +85,8 @@ router.post("/", authMiddleware, async (req: AuthenticatedRequest, res: Response
       .single()
 
     if (error) return sendResponse(res, 500, false, { error: error.message });
-
     return sendResponse(res, 201, true, { project: data });
+
   } catch (err: any) {
     return sendResponse(res, 500, false, { error: err.message });
   }
