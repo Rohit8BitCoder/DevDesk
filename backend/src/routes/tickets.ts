@@ -273,6 +273,9 @@ router.delete('/tickets/:ticket_id',
       const ticket_id = req.params.ticket_id;
       const userId = req.user?.id
 
+      if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" });
+
+
       const { data, error } = await supabase
         .from('tickets')
         .delete()
