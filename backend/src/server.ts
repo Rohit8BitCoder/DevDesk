@@ -18,11 +18,7 @@ app.use("/api/v1/projects", authprojects);
 app.use("/api/v1", ticketsRouter);
 app.use("/api/v1", ticketcommentsRouter)
 app.use("/api/v1", ticketActionRouter)
-// Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.error(err.stack);
-  res.status(500).json({ success: false, error: "Something went wrong!" });
-});
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>

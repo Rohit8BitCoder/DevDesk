@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { sendResponse } from "../utils/sendResponse.ts";
 import { supabase } from "../config/supabaseClient.ts";
-import type { AuthenticatedRequest } from "../types/express.d.ts";
+import type { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
 
 
 
@@ -42,7 +42,7 @@ export const CreateProfile = async (req: AuthenticatedRequest, res: Response) =>
 };
 
 // Fetch all profiles (public route)
-export const getProfile = async (req: Request, res: Response) => {
+export const getProfile = async (res: Response) => {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, full_name, avatar_url, role");
