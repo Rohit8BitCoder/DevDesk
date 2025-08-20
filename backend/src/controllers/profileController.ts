@@ -1,42 +1,31 @@
-import { createClient } from "@supabase/supabase-js";
-import dotenv from "dotenv";
 import type { Request, Response } from "express";
-import { Router } from "express";
-import authMiddleware from "../middleware.ts";
+import { sendResponse } from "../utils/sendResponse.ts";
+import { supabase } from "../config/supabaseClient.ts";
+import type { AuthenticatedRequest } from "../types/express.d.ts";
 
-dotenv.config();
-const router = Router();
 
-// Validate env variables early
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  throw new Error("❌ Missing SUPABASE_URL or SUPABASE_KEY in environment.");
-}
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-
-interface AuthenticatedRequest extends Request {
-  user?: { id: string };
-}
-
-// Helper for async routes
-const asyncHandler =
-  (fn: any) => (req: Request, res: Response, next: any) =>
-    Promise.resolve(fn(req, res, next)).catch(next);
 
 // Create profile (protected route)
-router.post("/", authMiddleware, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+export const CreateProfile = async (req: AuthenticatedRequest, res: Response) => {
   const { username, full_name, avatar_url, role } = req.body;
   const userId = req.user?.id;
 
   if (!userId) {
-    return res.status(401).json({ success: false, error: "Unauthorized" });
+    return sendResponse(res, 401, false, { error: 'Unauthorized' });
   }
 
   if (!username) {
-    return res.status(400).json({ success: false, error: "Username is required" });
+    return sendResponse(res, 400, false, { error: "Username is required" });
+  }
+
+  const { data: existing } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", userId)
+    .single();
+
+  if (existing) {
+    return sendResponse(res, 409, false, { error: "Profile already exists" });
   }
 
   const { data, error } = await supabase
@@ -46,14 +35,14 @@ router.post("/", authMiddleware, asyncHandler(async (req: AuthenticatedRequest, 
     .single();
 
   if (error) {
-    return res.status(500).json({ success: false, error: error.message });
+    return sendResponse(res, 500, false, { error: error.message });
   }
 
-  res.status(201).json({ success: true, data });
-}));
+  sendResponse(res, 201, true, { data: data });
+};
 
 // Fetch all profiles (public route)
-router.get("/", asyncHandler(async (req: Request, res: Response) => {
+export const getProfile = async (req: Request, res: Response) => {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, full_name, avatar_url, role");
@@ -63,10 +52,10 @@ router.get("/", asyncHandler(async (req: Request, res: Response) => {
   }
 
   res.json({ success: true, data });
-}));
+};
 
 // Fetch single profile (public route)
-router.get("/:id", asyncHandler(async (req: Request, res: Response) => {
+export const getProfilebyId = async (req: Request, res: Response) => {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, full_name, avatar_url, role")
@@ -82,10 +71,10 @@ router.get("/:id", asyncHandler(async (req: Request, res: Response) => {
   }
 
   res.json({ success: true, data });
-}));
+};
 
 // Update profile (protected route)
-router.patch("/:id", authMiddleware, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+export const updateProfie = async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
   const profileId = req.params.id;
   const { username, full_name, avatar_url, role } = req.body;
@@ -114,10 +103,10 @@ router.patch("/:id", authMiddleware, asyncHandler(async (req: AuthenticatedReque
   }
 
   res.json({ success: true, data });
-}));
+};
 
 // Delete profile (protected route)
-router.delete("/:id", authMiddleware, asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+export const deleteProfile = async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
   const profileId = req.params.id;
 
@@ -139,7 +128,4 @@ router.delete("/:id", authMiddleware, asyncHandler(async (req: AuthenticatedRequ
   }
 
   res.json({ success: true, message: "Profile deleted successfully" });
-}));
-
-export default router;
-
+};

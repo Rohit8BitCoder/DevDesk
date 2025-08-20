@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-import authMiddleware from "../middleware.ts";
+import authMiddleware from "../middleware/Authmiddleware.ts";
 
 dotenv.config();
 const router = Router();

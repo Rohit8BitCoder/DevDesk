@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { Router } from "express";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-import authMiddleware from "../middleware.ts";
+import authMiddleware from "../middleware/Authmiddleware.ts";
 
 dotenv.config();
 const router = Router();
@@ -275,17 +275,35 @@ router.delete('/tickets/:ticket_id',
 
       if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" });
 
+      // Fetch ticket and check project ownership
+      const { data: ticket, error: fetchError } = await supabase
+        .from('tickets')
+        .select('id, project_id, created_by')
+        .eq('id', ticket_id)
+        .single();
+
+      if (fetchError) return sendResponse(res, 500, false, { error: fetchError.message });
+      if (!ticket) return sendResponse(res, 404, false, { message: 'Ticket not found' });
+
+      const { data: project } = await supabase
+        .from('projects')
+        .select('id')
+        .eq('id', ticket.project_id)
+        .eq('owner_id', userId)
+        .single();
+
+      if (!project && ticket.created_by !== userId) {
+        return sendResponse(res, 403, false, { error: 'Forbidden' });
+      }
 
       const { data, error } = await supabase
         .from('tickets')
         .delete()
-        .eq('ticket_id', ticket_id)
-        .eq('created_by', userId)
+        .eq('id', ticket_id)
         .select()
-        .single()
+        .single();
       if (error) return sendResponse(res, 500, false, { error: error.message });
-      if (!data) return sendResponse(res, 404, false, { message: 'Ticket not found for deletion' });
-      return sendResponse(res, 200, true, { ticket: data });
+      return sendResponse(res, 200, true, { deleted: data });
 
     } catch (error: any) {
       return sendResponse(res, 500, false, { error: error.message })

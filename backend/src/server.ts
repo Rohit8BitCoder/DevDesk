@@ -1,12 +1,12 @@
 
 import express from "express";
 import dotenv from "dotenv";
-import authRouters from "./routes/auth.ts";
-import authProfiles from "./routes/profile.ts";
-import authprojects from "./routes/projects.ts";
-import ticketsRouter from "./routes/tickets.ts";
-import ticketcommentsRouter from "./routes/ticketComments.ts";
-import ticketActionRouter from "./routes/ticketActivity.ts"
+import authRouters from "./routes/authRouter.ts";
+import authProfiles from "./routes/profileRouter.ts";
+import authprojects from "./routes/projectsRouter.ts";
+import ticketsRouter from "./routes/ticketsRouter.ts";
+import ticketcommentsRouter from "./routes/ticketCommentsRouter.ts";
+import ticketActionRouter from "./routes/ticketActivityRouter.ts"
 dotenv.config();
 const app = express();
 
