@@ -1,7 +1,7 @@
 import { sendResponse } from "../utils/sendResponse.ts";
 import { supabase } from "../config/supabaseClient.ts";
 import type { Response } from "express";
-import { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
+import type { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
 
 
 export const createComment = async (req: AuthenticatedRequest, res: Response) => {

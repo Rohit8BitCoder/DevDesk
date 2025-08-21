@@ -1,7 +1,7 @@
-import { Response } from "express";
+import type { Response } from "express";
 import type { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
 import { sendResponse } from "../utils/sendResponse.ts";
-import { TicketCreateBody, TicketUpdateBody } from "../types/ticketTypes.ts";
+import type { TicketCreateBody, TicketUpdateBody } from "../types/ticketTypes.ts";
 import { TicketService } from "../services/ticketService.ts";
 
 export const TicketController = {

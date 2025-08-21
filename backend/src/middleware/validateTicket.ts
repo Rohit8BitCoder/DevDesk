@@ -1,8 +1,9 @@
 
-import { NextFunction, Response } from "express";
-import { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
+import type { NextFunction, Response } from "express";
+import type { AuthenticatedRequest } from "../types/AuthenticatedRequest.ts";
 import { sendResponse } from "../utils/sendResponse.ts";
-import { STATUS, PRIORITY, TicketCreateBody, TicketUpdateBody } from "../types/ticketTypes.ts";
+import { STATUS, PRIORITY } from "../types/ticketTypes.ts";
+import type { TicketCreateBody, TicketUpdateBody } from "../types/ticketTypes.ts";
 
 export const validateTicketData = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const { title, description, status = "open", priority = "medium" } = req.body as TicketCreateBody;
