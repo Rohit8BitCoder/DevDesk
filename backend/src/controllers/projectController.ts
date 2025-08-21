@@ -83,7 +83,7 @@ export const updateProject = async (req: AuthenticatedRequest, res: Response) =>
 // Delete project
 export const deleteProject = async (req: AuthenticatedRequest, res: Response) => {
   const userId = req.user?.id;
-  const projectId = req.params.p_id;
+  const projectId = req.params.P_id;
 
   if (!userId) return sendResponse(res, 401, false, { error: "Unauthorized" });
 

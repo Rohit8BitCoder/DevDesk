@@ -5,7 +5,7 @@ import asyncHandler from "../utils/asyncHandler.ts";
 const router = Router();
 
 router.get('/', authMiddleware, asyncHandler(getprojectbyUser))
-router.get('/:P_id', asyncHandler(getProjectsbyId))
+router.get('/:P_id', authMiddleware, asyncHandler(getProjectsbyId))
 router.post('/', authMiddleware, asyncHandler(creatProject))
 router.patch('/:P_id', authMiddleware, asyncHandler(updateProject))
 router.delete('/:P_id', authMiddleware, asyncHandler(deleteProject))

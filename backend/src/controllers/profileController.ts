@@ -42,7 +42,7 @@ export const CreateProfile = async (req: AuthenticatedRequest, res: Response) =>
 };
 
 // Fetch all profiles (public route)
-export const getProfile = async (res: Response) => {
+export const getProfile = async (_req: Request, res: Response) => {
   const { data, error } = await supabase
     .from("profiles")
     .select("id, username, full_name, avatar_url, role");

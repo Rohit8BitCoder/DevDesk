@@ -15,10 +15,9 @@ app.use(express.json());
 app.use("/api/v1/auth", authRouters);
 app.use("/api/v1/profiles", authProfiles);
 app.use("/api/v1/projects", authprojects);
-app.use("/api/v1", ticketsRouter);
-app.use("/api/v1", ticketcommentsRouter)
-app.use("/api/v1", ticketActionRouter)
-
+app.use("/api/v1/ticket", ticketsRouter);
+app.use("/api/v1/ticketcomment", ticketcommentsRouter)
+app.use("/api/v1/ticketAction", ticketActionRouter)
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>

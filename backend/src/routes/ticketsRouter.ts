@@ -6,11 +6,11 @@ import { validateTicketData, validateTicketUpdate } from "../middleware/validate
 
 const router = Router();
 
-router.post("/projects/:project_id/tickets", authMiddleware, validateTicketData, TicketController.create);
-router.get("/projects/:project_id/tickets", authMiddleware, TicketController.getAll);
-router.get("/tickets/:ticket_id", authMiddleware, TicketController.getOne);
-router.patch("/tickets/:ticket_id", authMiddleware, validateTicketUpdate, TicketController.update);
-router.delete("/tickets/:ticket_id", authMiddleware, TicketController.remove);
+router.post("/:project_id/tickets", authMiddleware, validateTicketData, TicketController.create);
+router.get("/:project_id/tickets", authMiddleware, TicketController.getAll);
+router.get("/:ticket_id", authMiddleware, TicketController.getOne);
+router.patch("/:ticket_id", authMiddleware, validateTicketUpdate, TicketController.update);
+router.delete("/:ticket_id", authMiddleware, TicketController.remove);
 
 export default router;
 
